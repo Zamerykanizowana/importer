@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+    "strings"
+    "errors"
 )
 
 type csvFile struct {
@@ -19,6 +21,18 @@ type csvFile struct {
 func NewCsvFile(path string) *csvFile {
 	f := csvFile{path: path}
 	return &f
+}
+
+func findMailColumn(headerLine string) (int, error) {
+    fmt.Println(headerLine)
+    s := strings.Split(headerLine, ",")
+    for index, element := range s {
+        if element == "email" {
+            fmt.Println(index)
+            return index, nil
+        }
+    }
+    return 0, errors.New("No email column in file")
 }
 
 func (f csvFile) ReadFile() {
@@ -31,9 +45,15 @@ func (f csvFile) ReadFile() {
 
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
+    
+    fileScanner.Scan()
+    _, err = findMailColumn(fileScanner.Text())
+    if err != nil {
+        log.Fatal(err)
+    }
 
 	for fileScanner.Scan() {
-		fmt.Println(fileScanner.Text())
+		// fmt.Println(fileScanner.Text())
 	}
 
 }
