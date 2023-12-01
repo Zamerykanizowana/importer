@@ -7,11 +7,13 @@ package customerimporter
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"os"
-    "strings"
-    "errors"
+	"sort"
+	"strings"
+	"time"
 )
 
 type csvFile struct {
@@ -24,18 +26,20 @@ func NewCsvFile(path string) *csvFile {
 }
 
 func findMailColumn(headerLine string) (int, error) {
-    fmt.Println(headerLine)
-    s := strings.Split(headerLine, ",")
-    for index, element := range s {
-        if element == "email" {
-            fmt.Println(index)
-            return index, nil
-        }
-    }
-    return 0, errors.New("No email column in file")
+	fmt.Println(headerLine)
+	s := strings.Split(headerLine, ",")
+	for index, element := range s {
+		if element == "email" {
+			fmt.Println(index)
+			return index, nil
+		}
+	}
+	return 0, errors.New("No email column in file")
 }
 
-func (f csvFile) ReadFile() {
+func (f csvFile) ReadFile() (map[string]int, error) {
+	log.Println("Start processing...")
+	start := time.Now()
 	readFile, err := os.Open(f.path)
 	defer readFile.Close()
 
@@ -45,15 +49,30 @@ func (f csvFile) ReadFile() {
 
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
-    
-    fileScanner.Scan()
-    _, err = findMailColumn(fileScanner.Text())
-    if err != nil {
-        log.Fatal(err)
-    }
 
-	for fileScanner.Scan() {
-		// fmt.Println(fileScanner.Text())
+	fileScanner.Scan()
+	i, err := findMailColumn(fileScanner.Text())
+	if err != nil {
+		log.Fatal(err)
 	}
 
+	m := make(map[string]int)
+
+	for fileScanner.Scan() {
+		s := strings.Split(fileScanner.Text(), ",")
+		email := strings.Split(s[i], "@")
+		if len(email) != 2 {
+			log.Println(fmt.Sprintf("Problem with parsing email: %s, skipping", s[i]))
+		} else {
+			if _, ok := m[email[1]]; ok {
+				m[email[1]] += 1
+			} else {
+				m[email[1]] = 1
+			}
+		}
+	}
+
+	elapsed := time.Since(start)
+	log.Println("Procesing took", elapsed)
+	return m, nil
 }

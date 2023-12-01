@@ -2,12 +2,10 @@ package main
 
 import (
 	"github.com/Zamerykanizowana/importer/customerimporter"
-    "os"
+	"os"
 )
 
-
-
 func main() {
-    csvFile := customerimporter.NewCsvFile(os.Args[1])
-    csvFile.ReadFile()
+	csvFile := customerimporter.NewCsvFile(os.Args[1])
+	csvFile.ReadFile()
 }
