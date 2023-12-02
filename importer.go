@@ -1,11 +1,14 @@
 package main
 
 import (
+	"flag"
 	"github.com/Zamerykanizowana/importer/customerimporter"
-	"os"
 )
 
 func main() {
-	csvFile := customerimporter.NewCsvFile(os.Args[1])
+    var path string
+    flag.StringVar(&path, "path", "", "csv file path to analize")
+    flag.Parse()
+    csvFile := customerimporter.NewCsvFile(path)
 	csvFile.ReadFile()
 }
