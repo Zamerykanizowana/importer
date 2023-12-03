@@ -72,9 +72,27 @@ func testGeneric(pathInput, pathExpectedOutput, pathReceivedOutput string) error
 }
 
 func TestSmallAmout(t *testing.T) {
+	err := testGeneric("testdata/customers_small_amount.csv",
+		"testdata/customers_small_amount_output.csv",
+		"testdata/test_small_amount_received_output.csv")
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+}
+
+func TestReorderedColumns(t *testing.T) {
 	err := testGeneric("testdata/customers_reordered_columns.csv",
 		"testdata/customers_reordered_columns_output.csv",
-		"testdata/test_small_amout_received_output.csv")
+		"testdata/test_reordered_columns_received_output.csv")
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+}
+
+func TestWrongMail(t *testing.T) {
+	err := testGeneric("testdata/customers_wrong_mail.csv",
+		"testdata/customers_wrong_mail_output.csv",
+		"testdata/test_wrong_mail_received_output.csv")
 	if err != nil {
 		t.Errorf("%v", err)
 	}
