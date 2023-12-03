@@ -90,11 +90,11 @@ func WriteFile(m map[string]int, path string) {
 		log.Fatal("error writing headers to file", err)
 	}
 
-	for domain, acc := range m {
-		if err = w.Write([]string{domain, fmt.Sprintf("%v", acc)}); err != nil {
+	for domain, occ := range m {
+		if err = w.Write([]string{domain, fmt.Sprintf("%v", occ)}); err != nil {
 			log.Fatal("error writing records to file", err)
 		}
 	}
+	//log.Println("Save csv file %s", path)
 
-    
 }
