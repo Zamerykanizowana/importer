@@ -26,11 +26,9 @@ func NewCsvFile(path string) *csvFile {
 }
 
 func findMailColumn(headerLine string) (int, error) {
-	fmt.Println(headerLine)
 	s := strings.Split(headerLine, ",")
 	for index, element := range s {
 		if element == "email" {
-			fmt.Println(index)
 			return index, nil
 		}
 	}
