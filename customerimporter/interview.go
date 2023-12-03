@@ -95,6 +95,4 @@ func WriteFile(m map[string]int, path string) {
 			log.Fatal("error writing records to file", err)
 		}
 	}
-	//log.Println("Save csv file %s", path)
-
 }

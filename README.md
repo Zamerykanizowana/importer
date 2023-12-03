@@ -1,5 +1,6 @@
 # importer
-Funny importer. Tool to count customers from one domain.
+This is a tool to count how many customers are registered within a 
+given domain name
 
 ## Expected input
 `.csv` file with `email` column.
