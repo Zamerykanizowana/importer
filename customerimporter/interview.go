@@ -7,6 +7,7 @@ package customerimporter
 
 import (
 	"bufio"
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"log"
@@ -36,7 +37,7 @@ func findMailColumn(headerLine string) (int, error) {
 	return 0, errors.New("No email column in file")
 }
 
-func (f csvFile) ReadFile() (map[string]int, error) {
+func (f csvFile) ReadFile() map[string]int {
 	log.Println("Start processing...")
 	start := time.Now()
 	readFile, err := os.Open(f.path)
@@ -72,6 +73,30 @@ func (f csvFile) ReadFile() (map[string]int, error) {
 	}
 
 	elapsed := time.Since(start)
-	log.Println("Procesing took", elapsed)
-	return m, nil
+	log.Println("Reading data and making map took", elapsed)
+	return m
+}
+
+func WriteFile(m map[string]int, path string) {
+	f, err := os.Create(path)
+	defer f.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w := csv.NewWriter(f)
+	defer w.Flush()
+
+	if err = w.Write([]string{"domain", "number of customers"}); err != nil {
+		log.Fatal("error writing headers to file", err)
+	}
+
+	for domain, acc := range m {
+		if err = w.Write([]string{domain, fmt.Sprintf("%v", acc)}); err != nil {
+			log.Fatal("error writing records to file", err)
+		}
+	}
+
+    
 }
