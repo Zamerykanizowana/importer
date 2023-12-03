@@ -45,27 +45,36 @@ func checkCounting(expected, received map[string]int) error {
 	return nil
 }
 
-func TestReorderedColumn(t *testing.T) {
-	expected, err := mapFromCsv("testdata/customers_reordered_columns_output.csv")
+func testGeneric(pathInput, pathExpectedOutput, pathReceivedOutput string) error {
+	expected, err := mapFromCsv(pathExpectedOutput)
 	if err != nil {
-		t.Errorf("Fail test")
+		return errors.New("Problem with reading data from expected output")
 	}
 
-	received := NewCsvFile("testdata/customers_reordered_columns.csv").ReadFile()
+	received := NewCsvFile(pathInput).ReadFile()
 	err = checkCounting(expected, received)
 	if err != nil {
-		t.Errorf("%v", err)
+		return err
 	}
 
-	receivedFilePath := "testdata/test_reordered_column_output.csv"
-	WriteFile(received, receivedFilePath)
-	defer os.Remove(receivedFilePath)
-	received, err = mapFromCsv(receivedFilePath)
+	WriteFile(received, pathReceivedOutput)
+	defer os.Remove(pathReceivedOutput)
+	received, err = mapFromCsv(pathReceivedOutput)
 	if err != nil {
-		t.Errorf("%v", err)
+		return err
 	}
 
 	err = checkCounting(expected, received)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func TestSmallAmout(t *testing.T) {
+	err := testGeneric("testdata/customers_reordered_columns.csv",
+		"testdata/customers_reordered_columns_output.csv",
+		"testdata/test_small_amout_received_output.csv")
 	if err != nil {
 		t.Errorf("%v", err)
 	}
